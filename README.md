@@ -11,7 +11,7 @@ Trace bent light, cross the photon sphere, study relativistic accretion, and hea
 ![React](https://img.shields.io/badge/React-19-111827?style=flat-square&logo=react&logoColor=61DAFB)
 ![Three.js](https://img.shields.io/badge/Three.js-WebGL-111827?style=flat-square&logo=threedotjs&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-typed-3178C6?style=flat-square&logo=typescript&logoColor=white)
-![GLSL](https://img.shields.io/badge/GLSL-ray%20integration-DC6C2B?style=flat-square)
+![GLSL](https://img.shields.io/badge/GLSL-relativistic%20transfer-DC6C2B?style=flat-square)
 ![Web Audio](https://img.shields.io/badge/Web%20Audio-sonification-4D9CA3?style=flat-square)
 
 </div>
@@ -22,13 +22,13 @@ Trace bent light, cross the photon sphere, study relativistic accretion, and hea
 
 Event Horizon Observatory opens directly on a living, procedural view of a non-rotating black hole. There is no landing screen between the observer and the physics. Telemetry occupies a thin edge rail, scale annotations float around the shadow, and a retractable command deck stays outside the focal region.
 
-The latest renderer replaces cut-off screen-space disk segments with a continuous hybrid optical model: adaptive per-pixel ray bending handles the primary image and lensed starfield, while a smooth transfer approximation reconstructs the strongly bent far side of the disk. The result remains coherent from face-on to edge-on observation.
+The latest renderer replaces cut-off disk segments and unstable volume slices with one continuous optical-transfer model. A smooth impact-parameter deflection field handles the lensed starfield, while ordered rear-disk, shadow, and foreground-disk compositing reconstructs the strongly bent flow without a detached ellipse. The result remains coherent from face-on to edge-on observation.
 
 ## What is simulated
 
-- **Adaptive pseudo-Schwarzschild ray integration** bends every viewing direction toward the compact object, with smaller steps near the strong-field region and fast traversal through empty space.
-- **Finite-thickness radiative accumulation** gathers emission and optical depth through the disk instead of painting a flat overlay.
-- **Keplerian plasma flow** advects broad eddies, fine turbulence, spiral density waves, and transient hot knots at radius-dependent orbital rates.
+- **Schwarzschild-inspired optical transfer** bends background viewing directions continuously toward the compact object without exposing discrete ray-march slices.
+- **Ordered radiative compositing** layers the rear disk, lensed far side, circular shadow, and foreground plasma in their correct visual order.
+- **Keplerian plasma flow** advects broad eddies, fine turbulence, spiral density waves, and sheared filaments at radius-dependent orbital rates.
 - **Relativistic Doppler beaming** brightens and blueshifts approaching material while dimming the receding side.
 - **Gravitational redshift** cools emission formed deeper in the potential well before it reaches the observer.
 - **Continuous secondary disk images** reveal the physically flat far side above and below the shadow without abrupt cuts.
@@ -45,10 +45,10 @@ Open the advanced deck to tune the GPU model without interrupting the simulation
 
 | Parameter | Effect |
 | --- | --- |
-| Lensing | Scales strong-field ray curvature and the apparent secondary image |
+| Lensing | Scales strong-field optical deflection and the apparent secondary image |
 | Disk heat | Changes the emitted thermal spectrum from ember to white-hot plasma |
 | Turbulence | Blends from a calm disk into multi-scale filaments and spiral structure |
-| Plasma | Controls vertical density, optical depth, and hot-knot visibility |
+| Plasma | Controls projected density, optical depth, and filament contrast |
 | Exposure | Adjusts the final filmic response without flattening local contrast |
 
 The main deck also provides face-on, orbital, edge-on, and free-look cameras; three accretion states; time dilation controls; Photon Probe; sound; relativistic layer toggles; three mass references; and cinematic observation sequences.
@@ -85,7 +85,7 @@ Changing between a 10-solar-mass stellar remnant, Sagittarius A\*, and M87\* rec
 
 This is a physics-informed educational visualization, not numerical-relativity software.
 
-- The ray integrator is a real-time pseudo-Schwarzschild optical approximation, not a full null-geodesic solver through a spacetime metric.
+- The transfer shader is a real-time Schwarzschild-inspired optical approximation, not a full null-geodesic solver through a spacetime metric.
 - The plasma model approximates emissivity and optical depth; it does not solve general-relativistic magnetohydrodynamics or covariant radiative transfer.
 - The secondary image uses a continuous transfer approximation to keep the strongly lensed disk stable at interactive frame rates.
 - Photon Probe is an illustrative 2D path classifier.

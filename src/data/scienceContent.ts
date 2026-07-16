@@ -25,7 +25,7 @@ export const scienceSections = [
   {
     title: "Gravitational Lensing",
     body:
-      "An adaptive per-pixel ray integrator bends viewing directions toward the compact object. A continuous transfer approximation reconstructs the strongly lensed far-side disk above and below the shadow without screen-space seams.",
+      "A continuous impact-parameter deflection field bends background directions toward the compact object. A stable transfer approximation reconstructs the strongly lensed far-side disk above the shadow without detached ellipses or screen-space seams.",
   },
   {
     title: "Doppler Beaming",
@@ -45,7 +45,7 @@ export const scienceSections = [
   {
     title: "What This Simulation Approximates",
     body:
-      "The shader integrates a pseudo-Schwarzschild optical path per pixel, accumulates finite-thickness plasma emission, and applies approximate relativistic frequency shifts. It does not solve the Einstein field equations, magnetohydrodynamics, or research-grade covariant radiative transfer.",
+      "The shader evaluates a scale-invariant Schwarzschild-inspired optical transfer field, procedural plasma emissivity, and approximate relativistic frequency shifts per pixel. It does not solve the Einstein field equations, magnetohydrodynamics, or research-grade covariant radiative transfer.",
   },
   {
     title: "About the Sound",
