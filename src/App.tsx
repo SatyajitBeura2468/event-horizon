@@ -1,5 +1,5 @@
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { BlackHoleCanvas, type VisualLayers } from "./scene/BlackHoleCanvas";
+import { BlackHoleCanvas, type SimulationParameters, type VisualLayers } from "./scene/BlackHoleCanvas";
 import type { ObserverSnapshot } from "./scene/CameraRig";
 import { ControlDock } from "./components/ControlDock";
 import { FallbackExperience } from "./components/FallbackExperience";
@@ -38,6 +38,14 @@ const defaultLayers: VisualLayers = {
   orbitMemory: true,
 };
 
+const defaultPhysics: SimulationParameters = {
+  lensing: 1,
+  diskHeat: 0.9,
+  turbulence: 1.05,
+  plasmaDensity: 0.5,
+  exposure: 0.82,
+};
+
 export default function App() {
   const reducedMotion = useReducedMotion();
   const adaptiveQuality = useAdaptiveQuality();
@@ -52,6 +60,7 @@ export default function App() {
   const [accretionRate, setAccretionRate] = useState<AccretionRate>("active");
   const [timeMode, setTimeMode] = useState<TimeMode>("1x");
   const [layers, setLayers] = useState<VisualLayers>(defaultLayers);
+  const [physics, setPhysics] = useState<SimulationParameters>(defaultPhysics);
   const [photonProbeActive, setPhotonProbeActive] = useState(false);
   const [controlsOpen, setControlsOpen] = useState(true);
   const [guideOpen, setGuideOpen] = useState(false);
@@ -168,6 +177,7 @@ export default function App() {
     setAccretionRate("active");
     setTimeMode("1x");
     setLayers(defaultLayers);
+    setPhysics(defaultPhysics);
     setPhotonProbeActive(false);
     setProbes([]);
     setTrail([]);
@@ -231,10 +241,11 @@ export default function App() {
           setObserver={setObserver}
           accretionRate={accretionRate}
           timeSpeed={timeSpeed}
-          quality={adaptiveQuality.mode}
+          quality={adaptiveQuality.constrained ? "balanced" : adaptiveQuality.mode}
           dpr={adaptiveQuality.dpr}
           reducedMotion={reducedMotion}
           layers={layers}
+          physics={physics}
           photonProbeActive={photonProbeActive}
           probes={probes}
           setProbes={setProbes}
@@ -272,6 +283,8 @@ export default function App() {
         timeMode={timeMode}
         onTimeModeChange={setTimeMode}
         layers={layers}
+        physics={physics}
+        onPhysicsChange={(parameter, value) => setPhysics((current) => ({ ...current, [parameter]: value }))}
         onLayerChange={onLayerChange}
         photonProbeActive={photonProbeActive}
         onPhotonProbeToggle={() => setPhotonProbeActive((value) => !value)}

@@ -15,7 +15,7 @@ export const scienceSections = [
   {
     title: "Photon Ring",
     body:
-      "The bright ring is an approximation of light passing close to the photon sphere. It is drawn as a diagnostic visual layer, not as a numerical ray-traced image.",
+      "The narrow bright region traces rays whose closest approach sits near the photon sphere. It is deliberately restrained: a true photon ring is far thinner than a display pixel and much fainter than the primary disk image.",
   },
   {
     title: "Accretion Disk",
@@ -25,7 +25,7 @@ export const scienceSections = [
   {
     title: "Gravitational Lensing",
     body:
-      "The reveal grid shows how background directions bend, stretch, and invert near the shadow. The strongest distortion appears near the critical ring region.",
+      "An adaptive per-pixel ray integrator bends viewing directions toward the compact object. A continuous transfer approximation reconstructs the strongly lensed far-side disk above and below the shadow without screen-space seams.",
   },
   {
     title: "Doppler Beaming",
@@ -45,7 +45,7 @@ export const scienceSections = [
   {
     title: "What This Simulation Approximates",
     body:
-      "The shader uses scale-invariant optical cues, procedural turbulence, screen-space lensing, and educational path classification. It does not solve the Einstein field equations or integrate full general-relativistic ray paths.",
+      "The shader integrates a pseudo-Schwarzschild optical path per pixel, accumulates finite-thickness plasma emission, and applies approximate relativistic frequency shifts. It does not solve the Einstein field equations, magnetohydrodynamics, or research-grade covariant radiative transfer.",
   },
   {
     title: "About the Sound",

@@ -9,7 +9,6 @@ import { CameraRig, type ObserverSnapshot } from "./CameraRig";
 import { LensingGrid } from "./LensingGrid";
 import { OrbitMemory } from "./OrbitMemory";
 import { PhotonProbe } from "./PhotonProbe";
-import { Starfield } from "./Starfield";
 import { accretionRates, type AccretionRate, type ObserverTarget } from "../data/presets";
 import { clamp, createPhotonProbePath, type ObserverTrailPoint, type ProbePath } from "../lib/blackHoleMath";
 import type { QualityMode } from "../lib/performance";
@@ -23,6 +22,14 @@ export type VisualLayers = {
   orbitMemory: boolean;
 };
 
+export type SimulationParameters = {
+  lensing: number;
+  diskHeat: number;
+  turbulence: number;
+  plasmaDensity: number;
+  exposure: number;
+};
+
 type BlackHoleCanvasProps = {
   observer: ObserverTarget;
   setObserver: (updater: ObserverTarget | ((observer: ObserverTarget) => ObserverTarget)) => void;
@@ -32,6 +39,7 @@ type BlackHoleCanvasProps = {
   dpr: number;
   reducedMotion: boolean;
   layers: VisualLayers;
+  physics: SimulationParameters;
   photonProbeActive: boolean;
   probes: ProbePath[];
   setProbes: (updater: ProbePath[] | ((probes: ProbePath[]) => ProbePath[])) => void;
@@ -47,6 +55,7 @@ type ShaderPlaneProps = {
   quality: QualityMode;
   reducedMotion: boolean;
   layers: VisualLayers;
+  physics: SimulationParameters;
   centerShift: number;
 };
 
@@ -57,6 +66,7 @@ function ShaderPlane({
   quality,
   reducedMotion,
   layers,
+  physics,
   centerShift,
 }: ShaderPlaneProps) {
   const materialRef = useRef<THREE.ShaderMaterial | null>(null);
@@ -84,6 +94,11 @@ function ShaderPlane({
     uniforms.uRedshiftEnabled.value = layers.redshift ? 1 : 0;
     uniforms.uLensingGridEnabled.value = layers.lensingGrid ? 1 : 0;
     uniforms.uCenterShift.value = centerShift;
+    uniforms.uLensingStrength.value = physics.lensing;
+    uniforms.uDiskHeat.value = physics.diskHeat;
+    uniforms.uTurbulence.value = physics.turbulence;
+    uniforms.uPlasmaDensity.value = physics.plasmaDensity;
+    uniforms.uExposure.value = physics.exposure;
   });
 
   return (
@@ -106,6 +121,7 @@ function Scene({
   quality,
   reducedMotion,
   layers,
+  physics,
   centerShift,
   onObserverChange,
 }: Omit<BlackHoleCanvasProps, "setObserver" | "dpr" | "photonProbeActive" | "probes" | "setProbes" | "trail" | "onProbeLaunch"> & {
@@ -132,12 +148,12 @@ function Scene({
         quality={quality}
         reducedMotion={reducedMotion}
         layers={layers}
+        physics={physics}
         centerShift={centerShift}
       />
-      <Starfield quality={quality} />
       <LensingGrid enabled={layers.lensingGrid} observer={observerRef.current} />
       <EffectComposer multisampling={quality === "ultra" ? 4 : 0}>
-        <Bloom intensity={quality === "ultra" ? 0.22 : 0.14} luminanceThreshold={0.56} luminanceSmoothing={0.16} />
+        <Bloom intensity={quality === "ultra" ? 0.13 : 0.08} luminanceThreshold={0.68} luminanceSmoothing={0.12} />
         <Vignette eskil={false} offset={0.34} darkness={0.52} />
       </EffectComposer>
     </>
@@ -153,6 +169,7 @@ export function BlackHoleCanvas({
   dpr,
   reducedMotion,
   layers,
+  physics,
   photonProbeActive,
   probes,
   setProbes,
@@ -327,6 +344,7 @@ export function BlackHoleCanvas({
             quality={quality}
             reducedMotion={reducedMotion}
             layers={layers}
+            physics={physics}
             centerShift={centerShift}
             onObserverChange={onObserverChange}
           />

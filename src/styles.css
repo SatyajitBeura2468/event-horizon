@@ -941,12 +941,12 @@ kbd {
 }
 
 .app-shell:has(.advanced-deck--open) .black-hole-stage {
-  transform: translateY(-9vh) scale(0.86);
+  transform: translateY(-15vh) scale(0.76);
 }
 
 .app-shell:has(.advanced-deck--open) .measurement-overlay {
-  top: 38%;
-  width: min(46vw, 520px);
+  top: 31%;
+  width: min(18vw, 260px);
 }
 
 .brand-lockup {
@@ -1127,17 +1127,17 @@ kbd {
   z-index: 7;
   left: 50%;
   top: 47%;
-  width: min(52vw, 590px);
+  width: min(23vw, 340px);
   aspect-ratio: 1;
   transform: translate(-50%, -50%);
   pointer-events: none;
-  opacity: 0.72;
+  opacity: 0.48;
 }
 
 .measurement-overlay__ring {
   position: absolute;
   inset: 5%;
-  border: 1px dashed rgba(220, 226, 229, 0.4);
+  border: 1px dashed rgba(220, 226, 229, 0.2);
   border-radius: 50%;
   mask-image: linear-gradient(90deg, transparent, #000 16%, #000 84%, transparent);
 }
@@ -1147,7 +1147,7 @@ kbd {
   display: block;
   width: 12px;
   height: 12px;
-  border-color: rgba(232, 237, 239, 0.72);
+  border-color: rgba(232, 237, 239, 0.42);
 }
 
 .measurement-tick--north { left: 50%; top: -1px; border-left: 1px solid; transform: translateX(-50%); }
@@ -1376,7 +1376,7 @@ kbd {
 }
 
 .advanced-deck--open {
-  max-height: 190px;
+  max-height: 310px;
   opacity: 1;
   border-top-width: 1px;
 }
@@ -1392,6 +1392,72 @@ kbd {
   font-size: 7px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
+}
+
+.advanced-deck .physics-controls {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 18px;
+  padding-block: 12px;
+  border-right: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.physics-controls__heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.physics-controls__heading p {
+  margin: 3px 0 0;
+  color: var(--cyan);
+  font-size: 7px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.physics-controls__heading button {
+  min-height: 22px;
+  padding-inline: 6px;
+  color: rgba(214, 221, 225, 0.52);
+  font-size: 7px;
+}
+
+.physics-controls__grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.physics-controls__grid label {
+  min-width: 0;
+  display: grid;
+  align-content: start;
+  gap: 8px;
+}
+
+.physics-controls__grid label > span {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  color: rgba(213, 220, 224, 0.72);
+  font-size: 8px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.physics-controls__grid strong {
+  color: var(--amber);
+  font-family: ui-monospace, monospace;
+  font-weight: 500;
+}
+
+.physics-controls__grid input {
+  width: 100%;
+  margin: 0;
 }
 
 .advanced-options,
@@ -1422,7 +1488,7 @@ kbd {
   .command-strip { grid-template-columns: 1.4fr 1.1fr 0.85fr 0.85fr 0.72fr 0.48fr 38px 30px; }
   .command-cell { padding-inline: 9px; }
   .command-options button:nth-child(4) { display: none; }
-  .measurement-overlay { width: min(58vw, 560px); }
+  .measurement-overlay { width: min(28vw, 300px); }
 }
 
 @media (max-width: 760px) {
@@ -1445,9 +1511,9 @@ kbd {
   .telemetry-panel div:nth-of-type(7),
   .telemetry-panel div:nth-of-type(8),
   .telemetry-panel div:nth-of-type(9) { display: none; }
-  .measurement-overlay { top: 42%; width: 90vw; opacity: 0.45; }
-  .app-shell:has(.advanced-deck--open) .black-hole-stage { transform: translateY(-14vh) scale(0.78); }
-  .app-shell:has(.advanced-deck--open) .measurement-overlay { top: 30%; width: 74vw; }
+  .measurement-overlay { top: 42%; width: 42vw; opacity: 0.4; }
+  .app-shell:has(.advanced-deck--open) .black-hole-stage { transform: translateY(-18vh) scale(0.68); }
+  .app-shell:has(.advanced-deck--open) .measurement-overlay { top: 25%; width: 34vw; }
   .measurement-label { display: none; }
   .interaction-hint { left: 50%; bottom: 114px; transform: translateX(-50%); white-space: nowrap; }
   .control-dock { bottom: 10px; width: calc(100vw - 16px); }
@@ -1466,6 +1532,8 @@ kbd {
   .advanced-deck { grid-template-columns: 1fr 1fr; overflow-y: auto; }
   .advanced-deck--open { max-height: min(49vh, 340px); }
   .advanced-deck section { padding: 11px; }
+  .advanced-deck .physics-controls { grid-template-columns: 1fr; gap: 10px; }
+  .physics-controls__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .revelation-panel { top: 74px; max-width: calc(100vw - 34px); }
 }
 

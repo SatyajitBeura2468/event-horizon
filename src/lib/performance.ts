@@ -14,7 +14,7 @@ export function getSafeDevicePixelRatio(mode: QualityMode, constrained: boolean)
   }
 
   const raw = window.devicePixelRatio || 1;
-  const cap = mode === "ultra" && !constrained ? 1.85 : 1.25;
+  const cap = constrained ? 1 : mode === "ultra" ? 1.85 : 1.25;
   return Math.max(1, Math.min(raw, cap));
 }
 

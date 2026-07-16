@@ -26,7 +26,7 @@ import {
   type TimeMode,
 } from "../data/presets";
 import type { QualityMode } from "../lib/performance";
-import type { VisualLayers } from "../scene/BlackHoleCanvas";
+import type { SimulationParameters, VisualLayers } from "../scene/BlackHoleCanvas";
 
 type ControlDockProps = {
   open: boolean;
@@ -41,6 +41,8 @@ type ControlDockProps = {
   onTimeModeChange: (mode: TimeMode) => void;
   layers: VisualLayers;
   onLayerChange: (layer: keyof VisualLayers, value: boolean) => void;
+  physics: SimulationParameters;
+  onPhysicsChange: (parameter: keyof SimulationParameters, value: number) => void;
   photonProbeActive: boolean;
   onPhotonProbeToggle: () => void;
   onMoment: (moment: (typeof blackHoleMoments)[number]) => void;
@@ -62,6 +64,20 @@ const layerLabels: Record<keyof VisualLayers, string> = {
   orbitMemory: "Orbit memory",
 };
 
+const physicsControls: Array<{
+  key: keyof SimulationParameters;
+  label: string;
+  min: number;
+  max: number;
+  step: number;
+}> = [
+  { key: "lensing", label: "Lensing", min: 0.72, max: 1.28, step: 0.01 },
+  { key: "diskHeat", label: "Disk heat", min: 0.65, max: 1.4, step: 0.01 },
+  { key: "turbulence", label: "Turbulence", min: 0, max: 1.35, step: 0.01 },
+  { key: "plasmaDensity", label: "Plasma", min: 0.2, max: 1.35, step: 0.01 },
+  { key: "exposure", label: "Exposure", min: 0.45, max: 1.65, step: 0.01 },
+];
+
 export function ControlDock({
   open,
   onClose,
@@ -75,6 +91,8 @@ export function ControlDock({
   onTimeModeChange,
   layers,
   onLayerChange,
+  physics,
+  onPhysicsChange,
   photonProbeActive,
   onPhotonProbeToggle,
   onMoment,
@@ -165,6 +183,28 @@ export function ControlDock({
         </div>
 
         <div className={`advanced-deck ${advanced ? "advanced-deck--open" : ""}`} aria-hidden={!advanced}>
+          <section className="physics-controls">
+            <div className="physics-controls__heading">
+              <div><h2>Advanced physics</h2><p>Live GPU parameters</p></div>
+              <button type="button" onClick={() => physicsControls.forEach((control) => onPhysicsChange(control.key, defaultPhysicsValue(control.key)))}>Reset physics</button>
+            </div>
+            <div className="physics-controls__grid">
+              {physicsControls.map((control) => (
+                <label key={control.key}>
+                  <span>{control.label}<strong>{physics[control.key].toFixed(2)}</strong></span>
+                  <input
+                    aria-label={control.label}
+                    type="range"
+                    min={control.min}
+                    max={control.max}
+                    step={control.step}
+                    value={physics[control.key]}
+                    onChange={(event) => onPhysicsChange(control.key, Number(event.currentTarget.value))}
+                  />
+                </label>
+              ))}
+            </div>
+          </section>
           <section>
             <h2>Target mass</h2>
             <div className="advanced-options">
@@ -199,4 +239,16 @@ export function ControlDock({
       </div>
     </aside>
   );
+}
+
+function defaultPhysicsValue(parameter: keyof SimulationParameters): number {
+  const defaults: SimulationParameters = {
+    lensing: 1,
+    diskHeat: 0.9,
+    turbulence: 1.05,
+    plasmaDensity: 0.5,
+    exposure: 0.82,
+  };
+
+  return defaults[parameter];
 }

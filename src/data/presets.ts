@@ -21,7 +21,7 @@ export const observationPresets: Record<ObservationPresetId, ObserverTarget & { 
   orbital: {
     label: "Orbital",
     preset: "orbital",
-    inclination: 42,
+    inclination: 75,
     azimuth: 0.55,
     zoom: 0.98,
   },
@@ -35,7 +35,7 @@ export const observationPresets: Record<ObservationPresetId, ObserverTarget & { 
   free: {
     label: "Free Look",
     preset: "free",
-    inclination: 46,
+    inclination: 58,
     azimuth: 0.3,
     zoom: 1,
   },

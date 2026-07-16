@@ -15,6 +15,11 @@ export type BlackHoleUniforms = {
   uRedshiftEnabled: THREE.IUniform<number>;
   uLensingGridEnabled: THREE.IUniform<number>;
   uCenterShift: THREE.IUniform<number>;
+  uLensingStrength: THREE.IUniform<number>;
+  uDiskHeat: THREE.IUniform<number>;
+  uTurbulence: THREE.IUniform<number>;
+  uPlasmaDensity: THREE.IUniform<number>;
+  uExposure: THREE.IUniform<number>;
 };
 
 export function createBlackHoleUniforms(): BlackHoleUniforms {
@@ -33,5 +38,10 @@ export function createBlackHoleUniforms(): BlackHoleUniforms {
     uRedshiftEnabled: { value: 1 },
     uLensingGridEnabled: { value: 0 },
     uCenterShift: { value: 0.58 },
+    uLensingStrength: { value: 1 },
+    uDiskHeat: { value: 0.9 },
+    uTurbulence: { value: 1.05 },
+    uPlasmaDensity: { value: 0.5 },
+    uExposure: { value: 0.82 },
   };
 }
