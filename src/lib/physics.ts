@@ -9,6 +9,9 @@ export type BlackHoleMetrics = {
   photonSphereRadiusMeters: number;
   iscoRadiusMeters: number;
   lightCrossingTimeSeconds: number;
+  iscoOrbitalPeriodSeconds: number;
+  iscoTimeDilation: number;
+  shadowDiameterMeters: number;
 };
 
 export function schwarzschildRadiusMeters(solarMasses: number): number {
@@ -33,5 +36,9 @@ export function computeBlackHoleMetrics(solarMasses: number): BlackHoleMetrics {
     photonSphereRadiusMeters: 1.5 * schwarzschildRadius,
     iscoRadiusMeters: 3 * schwarzschildRadius,
     lightCrossingTimeSeconds: schwarzschildRadius / C,
+    iscoOrbitalPeriodSeconds:
+      2 * Math.PI * Math.sqrt(Math.pow(3 * schwarzschildRadius, 3) / (G * solarMasses * SOLAR_MASS_KG)),
+    iscoTimeDilation: 1 / Math.sqrt(1 - 1 / 3),
+    shadowDiameterMeters: 3 * Math.sqrt(3) * schwarzschildRadius,
   };
 }

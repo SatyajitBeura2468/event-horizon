@@ -14,6 +14,7 @@ uniform float uReducedMotion;
 uniform float uDiskEnabled;
 uniform float uPhotonRingEnabled;
 uniform float uDopplerEnabled;
+uniform float uRedshiftEnabled;
 uniform float uLensingGridEnabled;
 uniform float uCenterShift;
 
@@ -50,6 +51,16 @@ vec3 diskPalette(float heat, float turbulence) {
   return color * (0.82 + 0.28 * turbulence);
 }
 
+vec3 blackBodyPalette(float temperature) {
+  vec3 deepRed = vec3(0.28, 0.018, 0.006);
+  vec3 orangeHot = vec3(1.0, 0.22, 0.025);
+  vec3 amberWhite = vec3(1.0, 0.76, 0.32);
+  vec3 whiteHot = vec3(1.0, 0.96, 0.84);
+  vec3 color = mix(deepRed, orangeHot, smoothstep(0.04, 0.42, temperature));
+  color = mix(color, amberWhite, smoothstep(0.32, 0.76, temperature));
+  return mix(color, whiteHot, smoothstep(0.72, 1.0, temperature));
+}
+
 void main() {
   vec2 uv = vUv;
   vec2 center = vec2(uCenterShift, 0.5);
@@ -65,8 +76,14 @@ void main() {
   float cosInc = max(cos(inclination), 0.12);
   float time = uTime * mix(1.0, 0.08, uReducedMotion);
 
-  float lensPull = 0.052 / (r * r + 0.022);
-  float criticalBoost = smoothstep(0.42, 0.11, abs(r - 0.255)) * 0.035;
+  // Screen-space Schwarzschild deflection: alpha approaches 4GM/(bc^2) far from the lens,
+  // with a softened logarithmic critical curve near the photon sphere.
+  float impact = max(r, 0.045);
+  float weakDeflection = 0.026 / impact;
+  float criticalDistance = max(abs(r - 0.248), 0.004);
+  float strongDeflection = -log(criticalDistance + 0.012) * 0.008 * smoothstep(0.46, 0.12, r);
+  float lensPull = weakDeflection + strongDeflection;
+  float criticalBoost = exp(-pow((r - 0.248) / 0.022, 2.0)) * 0.028;
   vec2 lensed = p + dir * (lensPull + criticalBoost);
   vec2 starP = rotate2d(lensed, uObserverAzimuth * 0.16) + vec2(sin(uObserverAzimuth), cos(uObserverAzimuth)) * 0.045;
   vec3 color = proceduralStars(starP, time, mix(0.88, 1.15, uQuality), uQuality);
@@ -84,38 +101,50 @@ void main() {
     color += vec3(1.0, 0.67, 0.25) * invertRing * 0.13;
   }
 
-  vec2 diskP = rotate2d(p, uObserverAzimuth);
+  // Camera azimuth changes orbital phase and beaming, not the projected disk plane.
+  // Keeping the disk's screen-space line of nodes stable prevents the accretion plane
+  // from visually rolling like a billboard while the observer orbits.
+  vec2 diskP = p;
   vec2 diskCoord = vec2(diskP.x, diskP.y / cosInc);
   float diskR = length(diskCoord);
   float diskTheta = atan(diskCoord.y, diskCoord.x);
-  float inner = 0.29;
+  float inner = 0.286;
   float outer = mix(0.67, 0.78, uAccretion);
-  float diskThickness = mix(0.014, 0.027, uAccretion) * mix(1.0, 1.5, sinInc);
+  float diskThickness = mix(0.009, 0.019, uAccretion) * mix(1.0, 1.34, sinInc);
   float diskShape = ringBand(diskR, inner, outer, 0.035);
   float vertical = exp(-pow(abs(diskP.y) / (diskThickness + 0.012 * (1.0 - cosInc)), 2.0));
   float primaryDisk = diskShape * vertical;
 
-  float backLift = shadowRadius * (0.72 + 0.22 * sinInc);
-  float upperArc = exp(-pow((diskP.y - backLift) / (0.032 + 0.025 * sinInc), 2.0));
-  float lowerArc = exp(-pow((diskP.y + backLift * 0.84) / (0.03 + 0.018 * sinInc), 2.0));
-  float arcRadial = ringBand(abs(diskP.x) + 0.24 * abs(diskP.y), inner * 0.75, outer * 0.92, 0.045);
-  float lensedDisk = (upperArc * 0.82 + lowerArc * 0.48) * arcRadial * sinInc;
+  float normalizedArcX = clamp(diskP.x / max(outer * 0.94, 0.01), -1.0, 1.0);
+  float arcWindow = smoothstep(1.0, 0.91, abs(normalizedArcX));
+  float arcCurve = shadowRadius * (1.08 + 0.1 * sinInc) * sqrt(max(1.0 - normalizedArcX * normalizedArcX, 0.0));
+  float arcThickness = mix(0.006, 0.012, uAccretion) + 0.006 * sinInc;
+  float upperArc = exp(-pow((diskP.y - arcCurve) / arcThickness, 2.0));
+  float lowerArc = exp(-pow((diskP.y + arcCurve * 0.9) / (arcThickness * 0.82), 2.0));
+  float lensedDisk = (upperArc * 0.94 + lowerArc * 0.06) * arcWindow * sinInc;
   float diskMask = max(primaryDisk, lensedDisk) * uDiskEnabled;
 
   float advect = diskTheta * 4.0 + time * (0.45 + uAccretion * 0.74) / max(diskR, 0.22);
-  float turbulent = fbm(vec2(advect, diskR * 12.0 - time * 0.38));
-  float innerHeat = smoothstep(outer, inner, diskR);
+  float turbulent = fbm(vec2(advect, diskR * 15.0 - time * 0.38));
+  float radialTemperature = pow(max(inner / max(diskR, inner), 0.0), 0.72);
+  float innerBoundary = pow(max(1.0 - sqrt(inner / max(diskR, inner + 0.001)), 0.0), 0.25);
+  float innerHeat = clamp(radialTemperature * innerBoundary * 1.75, 0.0, 1.0);
   float approaching = 0.5 + 0.5 * sin(diskTheta + uObserverAzimuth + 0.35);
   float beam = mix(1.0, 0.58 + 1.72 * approaching * sinInc, uDopplerEnabled);
-  float brokenGaps = 0.74 + 0.26 * smoothstep(0.2, 0.95, turbulent);
-  vec3 diskColor = diskPalette(innerHeat * beam, turbulent);
-  color = mix(color, diskColor * beam, clamp(diskMask * brokenGaps * (0.82 + uAccretion * 0.18), 0.0, 1.0));
+  float gravitationalShift = sqrt(max(1.0 - 0.214 / max(diskR, 0.218), 0.04));
+  float spectralShift = mix(1.0, gravitationalShift, uRedshiftEnabled);
+  float brokenGaps = 0.32 + 0.68 * smoothstep(0.28, 0.86, turbulent);
+  vec3 diskColor = mix(diskPalette(innerHeat * beam, turbulent), blackBodyPalette(innerHeat * beam), 0.64);
+  diskColor *= mix(vec3(1.18, 0.34, 0.12), vec3(1.0), spectralShift);
+  float filamentNoise = fbm(vec2(diskTheta * 10.0 - time * 0.9, diskR * 38.0));
+  float filament = 0.38 + 0.62 * smoothstep(0.32, 0.78, filamentNoise);
+  color = mix(color, diskColor * beam * 1.38, clamp(diskMask * brokenGaps * filament * (0.82 + uAccretion * 0.18), 0.0, 1.0));
 
-  float photonCore = exp(-pow((r - photonRadius) / 0.0065, 2.0));
+  float photonCore = exp(-pow((r - photonRadius) / 0.0042, 2.0));
   float photonHalo = exp(-pow((r - photonRadius) / 0.019, 2.0));
   float photonAsym = 0.72 + 0.48 * (0.5 + 0.5 * sin(atan(p.y, p.x) + uObserverAzimuth)) * sinInc;
   vec3 photonColor = vec3(1.0, 0.86, 0.46) * photonCore + vec3(1.0, 0.42, 0.14) * photonHalo * 0.32;
-  color += photonColor * photonAsym * uPhotonRingEnabled;
+  color += photonColor * photonAsym * uPhotonRingEnabled * 0.58;
 
   float shadow = 1.0 - smoothstep(shadowRadius - aa * 1.6, shadowRadius + aa * 1.6, r);
   float innerVoid = 1.0 - smoothstep(shadowRadius * 0.78, shadowRadius * 1.02, r);
@@ -128,7 +157,7 @@ void main() {
   color *= mix(0.64, 1.0, vignette);
 
   float grain = hash21(uv * uResolution.xy + time * 24.0) - 0.5;
-  color += grain * 0.012;
+  color += grain * 0.0045;
 
   color = color / (color + vec3(1.0));
   color = pow(max(color, 0.0), vec3(0.82));

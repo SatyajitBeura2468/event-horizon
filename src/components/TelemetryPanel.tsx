@@ -12,13 +12,17 @@ type TelemetryPanelProps = {
 export function TelemetryPanel({ metrics, massPreset, inclination }: TelemetryPanelProps) {
   return (
     <aside className="telemetry-panel" aria-label="Black hole physical telemetry">
+      <div className="telemetry-panel__status">
+        <span aria-hidden="true" />
+        Observation live
+      </div>
       <dl>
         <div>
           <dt>Object</dt>
           <dd>Schwarzschild Black Hole</dd>
         </div>
         <div>
-          <dt>Mass Preset</dt>
+          <dt>Target</dt>
           <dd>{massPresets[massPreset].label}</dd>
         </div>
         <div>
@@ -40,6 +44,14 @@ export function TelemetryPanel({ metrics, massPreset, inclination }: TelemetryPa
         <div>
           <dt>Light Crossing</dt>
           <dd>{formatSeconds(metrics.lightCrossingTimeSeconds)}</dd>
+        </div>
+        <div>
+          <dt>ISCO Period</dt>
+          <dd>{formatSeconds(metrics.iscoOrbitalPeriodSeconds)}</dd>
+        </div>
+        <div>
+          <dt>Time dilation</dt>
+          <dd>{metrics.iscoTimeDilation.toFixed(3)}×</dd>
         </div>
         <div>
           <dt>Mass</dt>

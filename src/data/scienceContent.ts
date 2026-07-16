@@ -33,6 +33,11 @@ export const scienceSections = [
       "Disk material moving toward the observer is shown brighter and hotter than material moving away. This is a simplified relativistic beaming cue tied to viewing angle.",
   },
   {
+    title: "Gravitational Redshift",
+    body:
+      "Emission produced deeper in the gravitational potential is shifted toward longer wavelengths before it reaches the observer. The redshift layer applies this as a restrained spectral cue rather than claiming full radiative transfer.",
+  },
+  {
     title: "The Photon Probe",
     body:
       "Photon Probe uses an illustrative 2D geodesic-inspired approximation. Rays far from the shadow escape, near-critical rays may loop briefly, and paths entering the capture zone fade into the shadow.",
@@ -41,6 +46,11 @@ export const scienceSections = [
     title: "What This Simulation Approximates",
     body:
       "The shader uses scale-invariant optical cues, procedural turbulence, screen-space lensing, and educational path classification. It does not solve the Einstein field equations or integrate full general-relativistic ray paths.",
+  },
+  {
+    title: "About the Sound",
+    body:
+      "The audio is an optional sonification driven by accretion intensity, time rate, and observer proximity. It is an interpretive instrument: sound is not presented as propagating through the vacuum around the black hole.",
   },
   {
     title: "Sources and Credits",

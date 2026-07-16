@@ -12,6 +12,7 @@ import { ScienceDrawer } from "./components/ScienceDrawer";
 import { approximationNotice } from "./data/scienceContent";
 import {
   blackHoleMoments,
+  accretionRates,
   massPresets,
   observationPresets,
   timeModes,
@@ -23,6 +24,7 @@ import {
 import { useAdaptiveQuality } from "./hooks/useAdaptiveQuality";
 import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
 import { useReducedMotion } from "./hooks/useReducedMotion";
+import { useObservatoryAudio } from "./hooks/useObservatoryAudio";
 import { clamp, scaleReferenceForMass, type ObserverTrailPoint, type ProbePath } from "./lib/blackHoleMath";
 import { detectWebGL } from "./lib/performance";
 import { computeBlackHoleMetrics } from "./lib/physics";
@@ -31,6 +33,7 @@ const defaultLayers: VisualLayers = {
   accretionDisk: true,
   photonRing: true,
   doppler: true,
+  redshift: true,
   lensingGrid: false,
   orbitMemory: true,
 };
@@ -68,6 +71,11 @@ export default function App() {
   );
 
   const timeSpeed = timeModes[timeMode].speed;
+  const audio = useObservatoryAudio({
+    accretion: accretionRates[accretionRate].shaderValue,
+    timeSpeed,
+    zoom: observerSnapshot.zoom,
+  });
 
   useEffect(() => {
     const onFullscreenChange = () => setIsFullscreen(Boolean(document.fullscreenElement));
@@ -232,6 +240,7 @@ export default function App() {
           setProbes={setProbes}
           trail={trail}
           onObserverChange={setObserverSnapshot}
+          onProbeLaunch={audio.ping}
         />
       </Suspense>
 
@@ -253,6 +262,7 @@ export default function App() {
 
       <ControlDock
         open={!immersion && controlsOpen}
+        onClose={() => setControlsOpen(false)}
         observer={observer}
         onObserverChange={setObserver}
         massPreset={massPreset}
@@ -269,6 +279,10 @@ export default function App() {
         onReset={resetObservation}
         onClearOrbitMemory={() => setTrail([])}
         quality={adaptiveQuality.mode}
+        soundEnabled={audio.enabled}
+        soundVolume={audio.volume}
+        onSoundToggle={audio.toggle}
+        onSoundVolumeChange={audio.setVolume}
       />
 
       <ScienceDrawer open={scienceOpen && !immersion} onClose={() => setScienceOpen(false)} />

@@ -2,6 +2,7 @@ import { Expand, Gauge, HelpCircle, Maximize2, Minimize2, SlidersHorizontal } fr
 import type { BlackHoleMetrics } from "../lib/physics";
 import type { MassPresetId } from "../data/presets";
 import { TelemetryPanel } from "./TelemetryPanel";
+import { formatKilometers } from "../lib/formatters";
 
 type ObservatoryHUDProps = {
   hidden: boolean;
@@ -40,7 +41,7 @@ export function ObservatoryHUD({
         <div className="brand-lockup__mark" aria-hidden="true" />
         <div>
           <p>EVENT HORIZON</p>
-          <h1>OBSERVATORY / SCHWARZSCHILD VISUAL LAB</h1>
+          <h1>SCHWARZSCHILD OBSERVATORY</h1>
           <span className="active-signal" aria-label="Observation active">
             <span aria-hidden="true" /> OBSERVATION ACTIVE
           </span>
@@ -71,6 +72,19 @@ export function ObservatoryHUD({
       </nav>
 
       <TelemetryPanel metrics={metrics} massPreset={massPreset} inclination={inclination} />
+
+      <div className="measurement-overlay" aria-hidden="true">
+        <div className="measurement-overlay__ring">
+          <span className="measurement-tick measurement-tick--north" />
+          <span className="measurement-tick measurement-tick--south" />
+          <span className="measurement-tick measurement-tick--east" />
+          <span className="measurement-tick measurement-tick--west" />
+        </div>
+        <div className="measurement-label measurement-label--photon"><span>Photon sphere</span><strong>1.5 Rs</strong></div>
+        <div className="measurement-label measurement-label--isco"><span>ISCO</span><strong>3 Rs</strong></div>
+        <div className="measurement-label measurement-label--radius"><span>Rs</span><strong>{formatKilometers(metrics.schwarzschildRadiusMeters)}</strong></div>
+        <div className="focal-reticle"><span /><i /><b /></div>
+      </div>
 
       <div className="interaction-hint" aria-live="polite">
         Drag to orbit · Scroll to approach

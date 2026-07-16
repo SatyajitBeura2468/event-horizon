@@ -1,4 +1,4 @@
-import { Suspense, useCallback, useEffect, useMemo, useRef, useState, type PointerEvent, type WheelEvent } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useRef, type PointerEvent, type WheelEvent } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Bloom, EffectComposer, Vignette } from "@react-three/postprocessing";
 import * as THREE from "three";
@@ -18,6 +18,7 @@ export type VisualLayers = {
   accretionDisk: boolean;
   photonRing: boolean;
   doppler: boolean;
+  redshift: boolean;
   lensingGrid: boolean;
   orbitMemory: boolean;
 };
@@ -36,6 +37,7 @@ type BlackHoleCanvasProps = {
   setProbes: (updater: ProbePath[] | ((probes: ProbePath[]) => ProbePath[])) => void;
   trail: ObserverTrailPoint[];
   onObserverChange: (observer: ObserverSnapshot) => void;
+  onProbeLaunch: () => void;
 };
 
 type ShaderPlaneProps = {
@@ -79,6 +81,7 @@ function ShaderPlane({
     uniforms.uDiskEnabled.value = layers.accretionDisk ? 1 : 0;
     uniforms.uPhotonRingEnabled.value = layers.photonRing ? 1 : 0;
     uniforms.uDopplerEnabled.value = layers.doppler ? 1 : 0;
+    uniforms.uRedshiftEnabled.value = layers.redshift ? 1 : 0;
     uniforms.uLensingGridEnabled.value = layers.lensingGrid ? 1 : 0;
     uniforms.uCenterShift.value = centerShift;
   });
@@ -105,7 +108,7 @@ function Scene({
   layers,
   centerShift,
   onObserverChange,
-}: Omit<BlackHoleCanvasProps, "setObserver" | "dpr" | "photonProbeActive" | "probes" | "setProbes" | "trail"> & {
+}: Omit<BlackHoleCanvasProps, "setObserver" | "dpr" | "photonProbeActive" | "probes" | "setProbes" | "trail" | "onProbeLaunch"> & {
   centerShift: number;
 }) {
   const observerRef = useRef<ObserverSnapshot>({
@@ -134,7 +137,7 @@ function Scene({
       <Starfield quality={quality} />
       <LensingGrid enabled={layers.lensingGrid} observer={observerRef.current} />
       <EffectComposer multisampling={quality === "ultra" ? 4 : 0}>
-        <Bloom intensity={quality === "ultra" ? 0.34 : 0.22} luminanceThreshold={0.48} luminanceSmoothing={0.22} />
+        <Bloom intensity={quality === "ultra" ? 0.22 : 0.14} luminanceThreshold={0.56} luminanceSmoothing={0.16} />
         <Vignette eskil={false} offset={0.34} darkness={0.52} />
       </EffectComposer>
     </>
@@ -155,23 +158,14 @@ export function BlackHoleCanvas({
   setProbes,
   trail,
   onObserverChange,
+  onProbeLaunch,
 }: BlackHoleCanvasProps) {
   const stageRef = useRef<HTMLDivElement | null>(null);
   const dragging = useRef(false);
   const lastPointer = useRef({ x: 0, y: 0, time: 0 });
   const velocity = useRef({ x: 0, y: 0 });
   const inertia = useRef<number | null>(null);
-  const [centerShift, setCenterShift] = useState(0.58);
-
-  useEffect(() => {
-    const updateCenter = () => {
-      setCenterShift(window.matchMedia("(max-width: 760px)").matches ? 0.5 : 0.58);
-    };
-
-    updateCenter();
-    window.addEventListener("resize", updateCenter);
-    return () => window.removeEventListener("resize", updateCenter);
-  }, []);
+  const centerShift = 0.5;
 
   useEffect(() => {
     return () => {
@@ -200,12 +194,13 @@ export function BlackHoleCanvas({
       const localY = event.clientY - rect.top;
       const path = createPhotonProbePath(localX, localY, rect.width, rect.height, centerShift);
       setProbes((current) => [...current.slice(-4), path]);
+      onProbeLaunch();
 
       window.setTimeout(() => {
         setProbes((current) => current.filter((probe) => probe.id !== path.id));
       }, 4200);
     },
-    [centerShift, setProbes],
+    [centerShift, onProbeLaunch, setProbes],
   );
 
   const updateObserverFromDrag = useCallback(

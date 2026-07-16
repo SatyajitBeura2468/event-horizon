@@ -2,66 +2,115 @@
 
 <div align="center">
 
-### A living visual laboratory for the edge of a black hole
+### A cinematic Schwarzschild black-hole laboratory
 
-An interactive Schwarzschild black-hole observatory built with React, Three.js, and custom GLSL. Explore gravitational lensing, photon paths, observer motion, scale, and light itself through a calm, cinematic control surface.
+Explore lensing, photon capture, accretion physics, relativistic beaming, gravitational redshift, and observer motion through a quiet, full-screen scientific instrument.
 
-<a href="https://you-are-working-inside-exactly-one.vercel.app">Open the live observatory</a>
+[**Launch the live observatory →**](https://you-are-working-inside-exactly-one.vercel.app)
 
 ![React](https://img.shields.io/badge/React-19-111827?style=flat-square&logo=react&logoColor=61DAFB)
 ![Three.js](https://img.shields.io/badge/Three.js-WebGL-111827?style=flat-square&logo=threedotjs&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-typed-3178C6?style=flat-square&logo=typescript&logoColor=white)
-![GLSL](https://img.shields.io/badge/GLSL-custom%20shaders-7C3AED?style=flat-square)
+![GLSL](https://img.shields.io/badge/GLSL-procedural-DC6C2B?style=flat-square)
+![Web Audio](https://img.shields.io/badge/Web%20Audio-sonification-4D9CA3?style=flat-square)
 
 </div>
 
-## What this is
+---
 
-Event Horizon Observatory opens directly into a procedural visual scene of a non-rotating Schwarzschild black hole. The dark shadow, photon-ring region, warped starfield, lensed accretion disk, Doppler brightening, and observatory telemetry are designed to make difficult ideas feel observable.
+## The experience
 
-It is an educational visualisation using simplified, physics-informed optical approximations. It is not a research-grade numerical relativity solver or a full general-relativistic ray tracer.
+Event Horizon Observatory opens directly into a procedural view of a non-rotating Schwarzschild black hole. There is no landing page and no game-like menu: the phenomenon is the interface.
 
-## Explore the observatory
+The second-generation observatory keeps the black hole completely unobstructed. Physical telemetry lives on a thin edge rail, measurement annotations sit in the scene, and a retractable command deck stays below the focal region. The result is usable like an instrument and immersive like an exhibit.
 
-- **Observer mode:** drag, orbit, zoom, and move through Face-On, Orbital, Edge-On, and Free Look views.
-- **Photon Probe:** release illustrative light packets and watch them escape, deflect, orbit critically, or fall into the shadow.
-- **Lensing Reveal:** expose a restrained coordinate grid and Einstein-ring diagnostic cue.
-- **Orbit Memory:** leave a subtle record of your recent observer path, then clear it when you want a clean view.
-- **Scale Revelation:** compare a 10-solar-mass stellar remnant with Sagittarius A* and M87*.
-- **Immersion Mode:** fade the interface away for a quiet observation or a screenshot.
-- **Cinematic moments:** start Approach the Shadow, Edge-On Distortion, or Inside the Einstein Ring.
-- **Adaptive rendering:** choose Balanced or Ultra quality, with reduced-motion and WebGL fallback support.
+### What you can observe
+
+- **Strong-field lensing** — a screen-space Schwarzschild deflection model combines the weak-field `4GM/(bc²)` behavior with a softened near-critical curve around the photon sphere.
+- **A thermally structured accretion disk** — radial temperature falloff, inner-boundary cooling, turbulent filaments, orbital advection, and a black-body-inspired color ramp create a more coherent disk.
+- **Relativistic asymmetry** — inclination-sensitive Doppler beaming brightens approaching material while gravitational redshift warms emission deeper in the potential well.
+- **The photon-ring region** — a narrow diagnostic ring marks near-critical light paths around `r = 1.5 Rs`.
+- **Photon Probe** — launch teaching rays that escape, deflect, briefly orbit, or cross the capture zone based on their impact parameter.
+- **Observer motion** — drag with inertia, scroll to change observation scale, or move instantly between face-on, orbital, and edge-on views.
+- **Scale revelation** — switch between a stellar remnant, Sagittarius A*, and M87* while the observatory recomputes physical telemetry.
+- **Spatial sonification** — an opt-in Web Audio engine turns accretion intensity, time rate, and observer proximity into a restrained ambient instrument; probe launches receive a short transient.
+
+> **Sound note:** space around the black hole is not being presented as audible. The soundtrack is a sonification of simulation parameters, not a claim that sound propagates through vacuum.
+
+## Instrument design
+
+The interface is designed around one rule: **never cover the phenomenon you are trying to understand.**
+
+| Surface | Purpose |
+| --- | --- |
+| Top observatory rail | Guide, science notes, adaptive quality, controls, and fullscreen |
+| Edge telemetry rail | Event horizon, photon sphere, ISCO, light-crossing time, orbital period, and time dilation |
+| Scene annotations | Scale-invariant `Rs`, photon-sphere, and ISCO markers |
+| Bottom command deck | View, inclination, accretion, time, probe, and sound |
+| Advanced deck | Mass targets, relativistic layers, cinematic observations, volume, trail, and reset |
+
+The deck collapses completely with `C`, reduces itself on tablets, and becomes a compact touch command bar on phones. Keyboard focus, readable labels, reduced-motion support, and a WebGL fallback are built in.
+
+## Physics model
+
+For a Schwarzschild black hole of mass `M`:
+
+| Quantity | Model |
+| --- | --- |
+| Schwarzschild radius | `Rs = 2GM/c²` |
+| Photon sphere | `r = 1.5 Rs` |
+| Innermost stable circular orbit | `r = 3 Rs` |
+| Apparent shadow diameter | `3√3 Rs` |
+| Light-crossing time | `Rs / c` |
+| ISCO orbital period | `2π√(r³ / GM)` at `r = 3 Rs` |
+| Static time-dilation factor at ISCO | `1 / √(1 - Rs/r)` |
+
+The GPU fragment shader then maps those relationships into a scale-invariant visual field. It models lens deflection, accretion emissivity, orbital texture advection, Doppler contrast, gravitational spectral shift, the dark shadow, and a procedural lensed starfield in real time.
+
+### Scientific boundary
+
+This is a **physics-informed educational visualization**, not a numerical-relativity code or a research-grade general-relativistic ray tracer.
+
+- It does not integrate null geodesics through a full spacetime metric per pixel.
+- It does not solve radiative transfer, magnetohydrodynamics, or plasma evolution.
+- Photon Probe is a geodesic-inspired 2D teaching model.
+- The visible dark region is the lensed black-hole shadow, not a glowing event horizon.
+- The accretion disk is physically flat even when lensing shows its far side above and below the shadow.
+
+The UI labels approximations directly so visual drama never masquerades as unsupported scientific precision.
 
 ## Controls
 
 | Input | Action |
 | --- | --- |
 | Drag | Orbit around the black hole |
-| Scroll | Approach or retreat |
-| `H` | Toggle the guide |
-| `C` | Toggle the control dock |
-| `G` | Toggle the lensing grid |
-| `P` | Toggle Photon Probe |
-| `M` | Toggle Immersion Mode |
+| Scroll / trackpad | Approach or retreat |
+| `C` | Toggle the command deck |
+| `H` | Open the guide |
+| `G` | Toggle the spacetime grid |
+| `P` | Arm Photon Probe |
+| `M` | Toggle immersion mode |
 | `Space` | Pause or resume simulation time |
 | `R` | Reset the observation |
-| `Escape` | Close drawers or leave immersion |
+| `Escape` | Close the uppermost surface or leave immersion |
 
-## Technology
+Sound begins only after a user gesture, in accordance with browser autoplay policy.
 
-The project uses Vite, React, TypeScript, React Three Fiber, Drei, React Postprocessing, Three.js, custom GLSL shader materials, and a small physics layer for Schwarzschild telemetry and photon-probe approximations.
+## Architecture
 
 ```text
 src/
-├── components/   observatory HUD, controls, drawers, loaders, fallbacks
-├── data/         presets and science copy
-├── hooks/        keyboard shortcuts, quality, reduced motion
-├── lib/          physics, formatting, performance, black-hole maths
-├── scene/        black hole, starfield, lensing grid, probe, camera
-└── shaders/      black-hole and starfield GLSL programs
+├── components/    command deck, telemetry, drawers, guide, fallback
+├── data/          mass, view, accretion, time, and science presets
+├── hooks/         shortcuts, adaptive quality, reduced motion, Web Audio
+├── lib/           Schwarzschild metrics, probe paths, formatting, performance
+├── scene/         canvas, camera, lensing grid, photon probe, orbit memory
+└── shaders/       black-hole and procedural-starfield GLSL
 ```
 
-## Local development
+The high-frequency render state stays inside React Three Fiber refs and shader uniforms rather than React component state. Adaptive quality controls device pixel ratio and postprocessing; mobile defaults to a lighter path, while Ultra enables multisampling and higher-detail shader behavior.
+
+## Run locally
 
 Requires Node.js 20 or newer.
 
@@ -70,32 +119,44 @@ npm install
 npm run dev
 ```
 
-For a production check:
+Open [http://127.0.0.1:5173](http://127.0.0.1:5173).
+
+### Production validation
 
 ```bash
-npm run build
 npm run lint
+npm run build
 npm run preview
 ```
 
-## Scientific boundaries
+## Performance and accessibility
 
-The visual model is intentionally clear about what it represents:
+- Adaptive DPR and Balanced/Ultra render modes
+- Mobile-specific quality defaults
+- Reduced-motion behavior via `prefers-reduced-motion`
+- Semantic controls and visible keyboard focus
+- Touch-sized primary commands and responsive deck reduction
+- WebGL capability fallback
+- No audio until explicit user activation
+- No essential information communicated by color alone
 
-- The event horizon emits no light. The dark region shown is the larger lensed black-hole shadow.
-- The disk is physically flat, but lensing can show light from its far side above and below the shadow.
-- Doppler brightening is strongest on material moving toward the observer.
-- Mass presets update physical telemetry while the visual scene stays readable at observatory scale.
-- Photon Probe is a geodesic-inspired 2D teaching aid, not a numerical general-relativity calculation.
+## References
 
-Reference material includes NASA Scientific Visualization Studio, NASA Science, Three.js, React Three Fiber, Drei, React Postprocessing, and The Book of Shaders. This independent project is not affiliated with NASA.
+- [NASA SVS — Black Hole with Accretion Disk Visualization](https://svs.gsfc.nasa.gov/14619/)
+- [NASA SVS — Black Hole Accretion Disk Visualization](https://svs.gsfc.nasa.gov/13326/)
+- [NASA Science — Anatomy of a Black Hole](https://science.nasa.gov/universe/black-holes/anatomy/)
+- [Three.js documentation](https://threejs.org/docs/)
+- [React Three Fiber documentation](https://r3f.docs.pmnd.rs/getting-started/introduction)
+- [The Book of Shaders](https://thebookofshaders.com/)
+
+This independent educational project is not affiliated with or endorsed by NASA.
 
 ## License
 
-Source code is released under the repository's [MIT License](LICENSE).
+Released under the [MIT License](LICENSE).
 
 <div align="center">
 
-Built by [Satyajit Beura](https://github.com/SatyajitBeura2468) for anyone curious about what light does when space stops being intuitive.
+Built by [Satyajit Beura](https://github.com/SatyajitBeura2468) for anyone curious about what light does when spacetime stops being intuitive.
 
 </div>
