@@ -6,7 +6,7 @@
 
 An interactive Schwarzschild black-hole observatory built with React, Three.js, and custom GLSL. Explore gravitational lensing, photon paths, observer motion, scale, and light itself through a calm, cinematic control surface.
 
-<a href="https://event-horizon-observatory.vercel.app">Open the live observatory</a>
+<a href="https://you-are-working-inside-exactly-one.vercel.app">Open the live observatory</a>
 
 ![React](https://img.shields.io/badge/React-19-111827?style=flat-square&logo=react&logoColor=61DAFB)
 ![Three.js](https://img.shields.io/badge/Three.js-WebGL-111827?style=flat-square&logo=threedotjs&logoColor=white)
